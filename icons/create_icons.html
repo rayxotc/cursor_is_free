@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Extension Icons</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Extension Icon Generator</h1>
+    <p>Open this in a browser and right-click each canvas to save as PNG</p>
+    
+    <h2>16x16</h2>
+    <canvas id="icon16" width="16" height="16"></canvas>
+    
+    <h2>48x48</h2>
+    <canvas id="icon48" width="48" height="48"></canvas>
+    
+    <h2>128x128</h2>
+    <canvas id="icon128" width="128" height="128"></canvas>
+    
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Add a lightning bolt or automation symbol
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⚡', size / 2, size / 2);
+        }
+        
+        drawIcon('icon16', 16);
+        drawIcon('icon48', 48);
+        drawIcon('icon128', 128);
+        
+        // Auto-download icons
+        setTimeout(() => {
+            ['icon16', 'icon48', 'icon128'].forEach(id => {
+                const canvas = document.getElementById(id);
+                const link = document.createElement('a');
+                link.download = `${id}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
+

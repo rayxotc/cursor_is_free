@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Signup</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Auto Signup</h1>
+      <button id="settingsButton" class="settings-button" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M18 10C18 10.3 17.8 10.6 17.5 10.8L16.3 11.5C16.1 11.6 16 11.9 16 12.1V12.9C16 13.1 16.1 13.4 16.3 13.5L17.5 14.2C17.8 14.4 18 14.7 18 15V17C18 17.6 17.6 18 17 18H15C14.7 18 14.4 17.8 14.2 17.5L13.5 16.3C13.4 16.1 13.1 16 12.9 16H12.1C11.9 16 11.6 16.1 11.5 16.3L10.8 17.5C10.6 17.8 10.3 18 10 18H8C7.4 18 7 17.6 7 17V15C7 14.7 6.8 14.4 6.5 14.2L5.3 13.5C5.1 13.4 4.8 13.4 4.6 13.5L3.4 14.2C3.1 14.4 2.7 14.3 2.5 14L1.5 12.5C1.2 12.1 1.3 11.6 1.7 11.4L2.9 10.7C3.1 10.6 3.2 10.3 3.2 10.1V9.9C3.2 9.7 3.1 9.4 2.9 9.3L1.7 8.6C1.3 8.4 1.2 7.9 1.5 7.5L2.5 6C2.7 5.7 3.1 5.6 3.4 5.8L4.6 6.5C4.8 6.6 5.1 6.6 5.3 6.5L6.5 5.8C6.8 5.6 7 5.3 7 5V3C7 2.4 7.4 2 8 2H10C10.3 2 10.6 2.2 10.8 2.5L11.5 3.7C11.6 3.9 11.9 4 12.1 4H12.9C13.1 4 13.4 3.9 13.5 3.7L14.2 2.5C14.4 2.2 14.7 2 15 2H17C17.6 2 18 2.4 18 3V5C18 5.3 17.8 5.6 17.5 5.8L16.3 6.5C16.1 6.6 16 6.9 16 7.1V7.9C16 8.1 16.1 8.4 16.3 8.5L17.5 9.2C17.8 9.4 18 9.7 18 10Z" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mode-selector">
+      <button id="fullModeBtn" class="mode-btn active">
+        <svg class="mode-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M15.75 9L9 2.25L2.25 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 2.25V15.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="mode-label">Full Auto</span>
+      </button>
+      <button id="stripeModeBtn" class="mode-btn">
+        <svg class="mode-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="2.25" y="4.5" width="13.5" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2.25 7.5H15.75" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M5.25 10.5H6.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="mode-label">Stripe Only</span>
+      </button>
+    </div>
+    
+    <div class="status-section">
+      <div class="status-container">
+        <div id="statusIndicator" class="status-indicator ready"></div>
+        <div id="status" class="status-text">Ready</div>
+      </div>
+    </div>
+
+    <button id="startButton" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon play-icon">
+        <path d="M4 2L13 8L4 14V2Z" fill="currentColor"/>
+      </svg>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="btn-icon stop-icon" style="display: none;">
+        <rect x="4" y="4" width="8" height="8" fill="currentColor" rx="1"/>
+      </svg>
+      <span id="buttonText" class="btn-text">Start Automation</span>
+    </button>
+
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-label-group">
+            <svg class="info-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M3 13C3 10.7909 5.23858 9 8 9C10.7614 9 13 10.7909 13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            <span class="info-label">Name</span>
+          </div>
+          <span id="nameData" class="info-value">—</span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-row">
+          <div class="info-label-group">
+            <svg class="info-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="4" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M2 6L8 9.5L14 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="info-label">Email</span>
+          </div>
+          <span id="emailData" class="info-value">—</span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-row">
+          <div class="info-label-group">
+            <svg class="info-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M2 6H14" stroke="currentColor" stroke-width="1.2"/>
+              <circle cx="5" cy="9" r="0.75" fill="currentColor"/>
+            </svg>
+            <span class="info-label">Card</span>
+          </div>
+          <span id="cardData" class="info-value">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="https://t.me/Rrryomenn" target="_blank" class="credit-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.64 8.8C16.49 10.38 15.84 14.22 15.51 15.99C15.37 16.74 15.09 16.99 14.83 17.01C14.25 17.07 13.81 16.64 13.25 16.27C12.37 15.69 11.87 15.33 11.02 14.77C10.03 14.12 10.67 13.76 11.24 13.18C11.39 13.03 13.95 10.7 14 10.49C14.0069 10.4582 14.006 10.4252 13.9973 10.3938C13.9886 10.3624 13.9724 10.3337 13.95 10.31C13.89 10.26 13.81 10.28 13.74 10.29C13.65 10.31 12.25 11.24 9.52 13.08C9.12 13.35 8.76 13.49 8.44 13.48C8.08 13.47 7.4 13.28 6.89 13.11C6.26 12.91 5.77 12.8 5.81 12.45C5.83 12.27 6.08 12.09 6.55 11.9C9.47 10.63 11.41 9.79 12.38 9.39C15.16 8.23 15.73 8.03 16.11 8.03C16.19 8.03 16.38 8.05 16.5 8.15C16.6 8.23 16.63 8.34 16.64 8.42C16.63 8.48 16.65 8.66 16.64 8.8Z" fill="currentColor"/>
+        </svg>
+        <span>Built by @Rrryomenn</span>
+      </a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

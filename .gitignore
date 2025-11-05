@@ -1,0 +1,22 @@
+# Chrome extension files
+*.crx
+*.pem
+
+# Generated icons (keep the HTML generator)
+icons/*.png
+
+# API keys and config
+config.json
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
