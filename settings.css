@@ -224,6 +224,11 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+}
+
+.setting-info-text {
+  flex: 1;
 }
 
 .setting-key {
@@ -238,6 +243,41 @@ h1 {
   color: #000000;
   font-variant-numeric: tabular-nums;
   letter-spacing: 1px;
+}
+
+/* Navigate Button */
+.btn-navigate {
+  background: linear-gradient(180deg, #007aff 0%, #0051d5 100%);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+}
+
+.btn-navigate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.35);
+}
+
+.btn-navigate:active {
+  transform: translateY(0);
+}
+
+.btn-navigate svg {
+  transition: transform 0.2s ease;
+}
+
+.btn-navigate:hover svg {
+  transform: translateX(2px);
 }
 
 /* About Section */

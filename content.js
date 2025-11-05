@@ -11,7 +11,8 @@ let generatedData = {
   email: null,
   emailData: null,
   card: null,
-  otp: null
+  otp: null,
+  password: null
 };
 
 // Prevent multiple injections
@@ -94,15 +95,25 @@ async function startAutomation() {
     await updateStatus('Waiting for password screen...', 'running');
     await waitForPasswordScreen();
     
-    // Step 7: Now look for and click "Continue with email code" button
-    await updateStatus('Looking for email code button...', 'running');
-    await waitAndClickEmailCodeButton();
+    // Step 7: Generate and enter password
+    await updateStatus('Generating password...', 'running');
+    const password = generateSecurePassword();
+    generatedData.password = password;
     
-    // Step 8: Wait for OTP screen (URL contains 'magic-code')
+    await updateStatus('Entering password...', 'running');
+    await fillPasswordField(password);
+    await sleep(500);
+    
+    // Step 8: Click continue/next button to generate OTP
+    await updateStatus('Clicking continue button...', 'running');
+    await clickPasswordContinueButton();
+    await sleep(1000);
+    
+    // Step 9: Wait for OTP screen (URL contains 'magic-code')
     await updateStatus('Waiting for OTP screen...', 'running');
     await waitForOTPScreen();
     
-    // Step 9: Wait for OTP input field to appear
+    // Step 10: Wait for OTP input field to appear
     await updateStatus('Waiting for OTP field...', 'running');
     await waitForOTPField();
     
@@ -110,12 +121,22 @@ async function startAutomation() {
     const otp = await fetchOTPFromEmail(email);
     generatedData.otp = otp;
     
-    // Step 10: Enter OTP
+    // Step 11: Enter OTP
     await updateStatus('Entering OTP...', 'running');
     await fillOTPField(otp);
     console.log('✅ OTP entered successfully!');
     
     await sleep(2000);
+    
+    // Step 12: Store credentials temporarily (will save after Stripe payment)
+    await chrome.storage.local.set({ 
+      pendingAccount: {
+        email: email,
+        password: password,
+        name: nameData.fullName
+      }
+    });
+    console.log('💾 Credentials stored temporarily, will save after Stripe payment');
     
     // Complete - Stop here and guide user
     console.log('✅ Account creation complete!');
@@ -129,6 +150,10 @@ async function startAutomation() {
     
   } catch (error) {
     console.error('Automation error:', error);
+    
+    // Clear pending account on error
+    await chrome.storage.local.remove(['pendingAccount']);
+    
     chrome.runtime.sendMessage({ 
       type: 'automationError',
       message: error.message 
@@ -164,6 +189,32 @@ function generateRandomName() {
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
   
   return { firstName, lastName, fullName: `${firstName} ${lastName}` };
+}
+
+// Generate secure password
+function generateSecurePassword() {
+  const length = 12;
+  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  const symbols = '!@#$%^&*';
+  
+  const allChars = uppercase + lowercase + numbers + symbols;
+  
+  let password = '';
+  // Ensure at least one of each type
+  password += uppercase[Math.floor(Math.random() * uppercase.length)];
+  password += lowercase[Math.floor(Math.random() * lowercase.length)];
+  password += numbers[Math.floor(Math.random() * numbers.length)];
+  password += symbols[Math.floor(Math.random() * symbols.length)];
+  
+  // Fill the rest randomly
+  for (let i = password.length; i < length; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+  
+  // Shuffle the password
+  return password.split('').sort(() => Math.random() - 0.5).join('');
 }
 
 // Fill name fields
@@ -258,6 +309,59 @@ async function fillEmailField(email) {
     fillInput(emailField, email);
   } else {
     throw new Error('Email field not found');
+  }
+}
+
+// Fill password field
+async function fillPasswordField(password) {
+  const passwordSelectors = [
+    'input[type="password"]',
+    'input[name*="password" i]',
+    'input[placeholder*="password" i]',
+    'input[id*="password" i]',
+    'input[autocomplete="new-password"]'
+  ];
+  
+  let passwordField = findElement(passwordSelectors);
+  
+  if (passwordField) {
+    console.log('✅ Found password field, clicking to focus...');
+    
+    // Scroll into view
+    passwordField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await sleep(300);
+    
+    // Click to focus the field
+    passwordField.click();
+    await sleep(200);
+    
+    console.log('✅ Filling password field...');
+    fillInput(passwordField, password);
+  } else {
+    throw new Error('Password field not found');
+  }
+}
+
+// Click continue button on password screen
+async function clickPasswordContinueButton() {
+  const continueSelectors = [
+    'button[type="submit"]',
+    'input[type="submit"]'
+  ];
+  
+  let button = findElement(continueSelectors);
+  
+  if (!button) {
+    // Try text-based search
+    button = findButtonByText(['continue', 'next', 'submit', 'sign up']);
+  }
+  
+  if (button) {
+    console.log('✅ Found continue button, clicking...');
+    button.click();
+    await sleep(300);
+  } else {
+    throw new Error('Continue button not found on password screen');
   }
 }
 
@@ -541,61 +645,6 @@ async function clickSignupButton() {
     button.click();
   } else {
     throw new Error('Signup button not found');
-  }
-}
-
-// Wait for and click "Continue with email code" button
-async function waitAndClickEmailCodeButton() {
-  try {
-    await updateStatus('Looking for email code button...', 'running');
-    
-    // Valid CSS selectors only
-    const selectors = [
-      'button[value="magic-code"]',
-      'button[data-method="email"]',
-      'button[name="intent"][value="magic-code"]',
-      'button[type="submit"][data-method="email"]'
-    ];
-    
-    let button = null;
-    const startTime = Date.now();
-    const timeout = 20000;
-    
-    // Poll for button (both CSS and text-based)
-    while (Date.now() - startTime < timeout && !button) {
-      // Try CSS selectors first
-      button = findElement(selectors);
-      
-      // If not found, try text-based search
-      if (!button) {
-        button = findButtonByText([
-          'continue with email code',
-          'email code',
-          'code'
-        ]);
-      }
-      
-      if (button) {
-        break;
-      }
-      
-      await sleep(500);
-    }
-    
-    if (button) {
-      await updateStatus('Email code button found, clicking...', 'running');
-      await sleep(300);
-      button.click();
-    } else {
-      // Maybe already past this screen, check URL
-      if (window.location.href.includes('/password') || window.location.href.includes('/verify')) {
-        await updateStatus('Already on next screen, skipping...', 'running');
-        return;
-      }
-      throw new Error('Email code button not found');
-    }
-  } catch (error) {
-    throw new Error('Email code button error: ' + error.message);
   }
 }
 
@@ -1273,6 +1322,40 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Save account credentials to storage
+async function saveAccountCredentials(email, password, name = null) {
+  try {
+    // Get existing accounts
+    const result = await chrome.storage.local.get(['savedAccounts']);
+    const savedAccounts = result.savedAccounts || [];
+    
+    // Create new account object
+    const newAccount = {
+      id: Date.now().toString(),
+      email: email,
+      password: password,
+      createdAt: new Date().toISOString(),
+      name: name || generatedData.name || 'Unknown'
+    };
+    
+    // Add to accounts array
+    savedAccounts.push(newAccount);
+    
+    // Save back to storage
+    await chrome.storage.local.set({ savedAccounts: savedAccounts });
+    
+    console.log('✅ Account credentials saved:', email);
+    
+    // Notify popup
+    chrome.runtime.sendMessage({
+      type: 'accountSaved',
+      account: newAccount
+    });
+  } catch (error) {
+    console.error('❌ Failed to save account credentials:', error);
+  }
+}
+
 // Stripe-only mode - Start from Stripe checkout page
 async function startStripeOnlyMode() {
   isAutomationRunning = true;
@@ -1328,12 +1411,31 @@ async function startStripeOnlyMode() {
     await clickSubmitButton();
     await sleep(1000);
     
+    // Save account credentials after successful Stripe payment
+    await updateStatus('Saving account credentials...', 'running');
+    const result = await chrome.storage.local.get(['pendingAccount']);
+    
+    if (result.pendingAccount) {
+      const { email, password, name } = result.pendingAccount;
+      await saveAccountCredentials(email, password, name);
+      
+      // Clear pending account
+      await chrome.storage.local.remove(['pendingAccount']);
+      console.log('✅ Account credentials saved after Stripe payment');
+    } else {
+      console.log('⚠️ No pending account found to save');
+    }
+    
     // Complete
     chrome.runtime.sendMessage({ type: 'automationComplete' });
-    await updateStatus('Payment form completed!', 'success');
+    await updateStatus('Payment completed & credentials saved!', 'success');
     
   } catch (error) {
     console.error('Stripe automation error:', error);
+    
+    // Clear pending account on error
+    await chrome.storage.local.remove(['pendingAccount']);
+    
     chrome.runtime.sendMessage({ 
       type: 'automationError',
       message: error.message 

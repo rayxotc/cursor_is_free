@@ -136,6 +136,14 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'popup.html';
   });
 
+  // Manage Accounts button
+  const manageAccountsBtn = document.getElementById('manageAccountsBtn');
+  if (manageAccountsBtn) {
+    manageAccountsBtn.addEventListener('click', function() {
+      window.location.href = 'accounts.html';
+    });
+  }
+
   // Show notification
   function showNotification() {
     notification.classList.add('show');
