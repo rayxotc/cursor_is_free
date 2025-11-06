@@ -5,6 +5,26 @@ let currentEditingId = null;
 document.addEventListener('DOMContentLoaded', function() {
   loadAccounts();
 
+  // Listen for account updates from content script
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.type === 'accountSaved') {
+      console.log('Account saved, refreshing list...');
+      loadAccounts();
+    }
+  });
+
+  // Refresh accounts when page becomes visible (in case accounts were added while page was open)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      loadAccounts();
+    }
+  });
+
+  // Also refresh on window focus
+  window.addEventListener('focus', function() {
+    loadAccounts();
+  });
+
   // Back button
   document.getElementById('backButton').addEventListener('click', function() {
     window.location.href = 'settings.html';

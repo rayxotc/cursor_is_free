@@ -3,24 +3,34 @@ console.log('🚀 AUTO SIGNUP CONTENT SCRIPT STARTING...');
 
 // ⚙️ CONFIG: TempMailApi key (using demo key from docs)
 // Replace with your own key from https://tempmailapi.com if needed
-const TEMP_MAIL_API_KEY = 'CZXXyF8jg5JRH7UbQWVYiKMQjQznCB6';
+if (typeof TEMP_MAIL_API_KEY === 'undefined') {
+  var TEMP_MAIL_API_KEY = 'CZXXyF8jg5JRH7UbQWVYiKMQjQznCB6';
+}
 
-let isAutomationRunning = false;
-let generatedData = {
-  name: null,
-  email: null,
-  emailData: null,
-  card: null,
-  otp: null,
-  password: null
-};
-
-// Prevent multiple injections
+// Prevent multiple injections and variable redeclaration
 if (window.hasRun) {
   console.log('⚠️ Content script already running, skipping...');
 } else {
   window.hasRun = true;
   console.log('✅ Initializing content script...');
+  
+  // Initialize variables on window object to prevent redeclaration
+  window.isAutomationRunning = false;
+  window.generatedData = {
+    name: null,
+    email: null,
+    emailData: null,
+    card: null,
+    otp: null,
+    password: null
+  };
+  
+  // Initialize helper functions on window object to prevent redeclaration
+  window.isAutomationRunningFn = () => window.isAutomationRunning || false;
+  window.setAutomationRunningFn = (value) => { window.isAutomationRunning = value; };
+  window.getGeneratedDataFn = () => window.generatedData || { name: null, email: null, emailData: null, card: null, otp: null, password: null };
+  window.setGeneratedDataFn = (data) => { window.generatedData = { ...window.generatedData, ...data }; };
+  window.resetGeneratedDataFn = () => { window.generatedData = { name: null, email: null, emailData: null, card: null, otp: null, password: null }; };
   
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -36,7 +46,7 @@ if (window.hasRun) {
       sendResponse({ status: 'started' });
     } else if (request.action === 'stopAutomation') {
       console.log('🛑 Stopping automation...');
-      isAutomationRunning = false;
+      window.isAutomationRunning = false;
       sendResponse({ status: 'stopped' });
     }
     return true;
@@ -44,16 +54,131 @@ if (window.hasRun) {
   
   console.log('✅ Auto Signup content script loaded successfully!');
   console.log('📍 Current URL:', window.location.href);
+  
+  // Check if we should auto-continue automation after refresh
+  chrome.storage.local.get(['autoSignupContinueAfterRefresh'], function(result) {
+    if (result.autoSignupContinueAfterRefresh) {
+      console.log('🔄 Detected refresh flag, continuing automation...');
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        startAutomation();
+      }, 1000);
+    }
+  });
+}
+
+// Helper functions that use window object (safe from redeclaration)
+function isAutomationRunning() { return window.isAutomationRunningFn ? window.isAutomationRunningFn() : false; }
+function setAutomationRunning(value) { if (window.setAutomationRunningFn) window.setAutomationRunningFn(value); }
+function getGeneratedData() { return window.getGeneratedDataFn ? window.getGeneratedDataFn() : { name: null, email: null, emailData: null, card: null, otp: null, password: null }; }
+function setGeneratedData(data) { if (window.setGeneratedDataFn) window.setGeneratedDataFn(data); }
+function resetGeneratedData() { if (window.resetGeneratedDataFn) window.resetGeneratedDataFn(); }
+
+// Clear all storage and cookies before automation (fast and reliable)
+async function clearAllStorageAndCookies() {
+  console.log('🧹 Clearing localStorage, sessionStorage, and cookies...');
+  
+  // Clear localStorage and sessionStorage synchronously (fast)
+  try {
+    localStorage.clear();
+    console.log('✅ localStorage cleared');
+  } catch (e) {
+    console.log('⚠️ localStorage clear error:', e);
+  }
+  
+  try {
+    sessionStorage.clear();
+    console.log('✅ sessionStorage cleared');
+  } catch (e) {
+    console.log('⚠️ sessionStorage clear error:', e);
+  }
+  
+  // Clear cookies via background script (Chrome API)
+  const domain = window.location.hostname;
+  return new Promise((resolve) => {
+    // Also try to clear cookies visible to document.cookie (for same-origin) first
+    try {
+      const documentCookies = document.cookie.split(';');
+      documentCookies.forEach((cookie) => {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        if (name) {
+          // Try multiple paths and domains
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${domain}`;
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${domain}`;
+        }
+      });
+    } catch (e) {
+      // Ignore errors
+    }
+    
+    // Send message to background script to clear cookies via Chrome API
+    try {
+      chrome.runtime.sendMessage({
+        type: 'clearCookies',
+        domain: domain
+      }, function(response) {
+        if (chrome.runtime.lastError) {
+          console.log('⚠️ Message error:', chrome.runtime.lastError.message);
+          resolve(); // Resolve anyway to continue
+          return;
+        }
+        
+        if (response && response.success) {
+          console.log(`✅ Cookies cleared via Chrome API: ${response.cleared} cookies`);
+        } else {
+          console.log('⚠️ Cookie clearing error:', response?.error || 'Unknown error');
+        }
+        
+        resolve();
+      });
+    } catch (e) {
+      console.log('⚠️ Error sending message to background:', e);
+      resolve(); // Resolve anyway to continue
+    }
+  });
 }
 
 async function startAutomation() {
-  isAutomationRunning = true;
+  setAutomationRunning(true);
+  
+  // Check if we should continue after refresh
+  const shouldContinue = await chrome.storage.local.get(['autoSignupContinueAfterRefresh']);
+  
+  if (shouldContinue.autoSignupContinueAfterRefresh) {
+    // Clear the flag
+    await chrome.storage.local.remove(['autoSignupContinueAfterRefresh']);
+    
+    // Continue with automation (storage already cleared)
+    await updateStatus('Starting automation...', 'running');
+    await sleep(500);
+    
+    // Clear all previous generated data to ensure fresh start
+    resetGeneratedData();
+    
+    // Clear stored email from Chrome storage
+    await chrome.storage.local.remove(['generatedEmail']);
+  } else {
+    // Step 0: Clear storage and cookies, then refresh page
+    await updateStatus('Clearing storage and cookies...', 'running');
+    await clearAllStorageAndCookies();
+    await updateStatus('Refreshing page...', 'running');
+    await sleep(500);
+    
+    // Set flag to continue after refresh
+    await chrome.storage.local.set({ autoSignupContinueAfterRefresh: true });
+    
+    // Refresh the page to ensure clean state
+    window.location.reload();
+    return; // Exit - will restart after reload
+  }
   
   try {
     // Step 1: Generate random name
     await updateStatus('Generating random name...', 'running');
     const nameData = generateRandomName();
-    generatedData.name = nameData.fullName;
+    setGeneratedData({ name: nameData.fullName });
     
     // Save and update UI
     chrome.storage.local.set({ generatedName: nameData.fullName });
@@ -72,7 +197,7 @@ async function startAutomation() {
     // Step 3: Generate temp email
     await updateStatus('Generating temporary email...', 'running');
     const email = await generateTempEmail();
-    generatedData.email = email;
+    setGeneratedData({ email: email });
     
     chrome.storage.local.set({ generatedEmail: email });
     chrome.runtime.sendMessage({
@@ -98,7 +223,7 @@ async function startAutomation() {
     // Step 7: Generate and enter password
     await updateStatus('Generating password...', 'running');
     const password = generateSecurePassword();
-    generatedData.password = password;
+    setGeneratedData({ password: password });
     
     await updateStatus('Entering password...', 'running');
     await fillPasswordField(password);
@@ -119,7 +244,7 @@ async function startAutomation() {
     
     await updateStatus('Fetching OTP from email...', 'running');
     const otp = await fetchOTPFromEmail(email);
-    generatedData.otp = otp;
+    setGeneratedData({ otp: otp });
     
     // Step 11: Enter OTP
     await updateStatus('Entering OTP...', 'running');
@@ -128,7 +253,12 @@ async function startAutomation() {
     
     await sleep(2000);
     
-    // Step 12: Store credentials temporarily (will save after Stripe payment)
+    // Step 12: Save account credentials immediately (after OTP verification, before Stripe)
+    await updateStatus('Saving account credentials...', 'running');
+    await saveAccountCredentials(email, password, nameData.fullName);
+    console.log('✅ Account credentials saved successfully!');
+    
+    // Step 13: Store credentials temporarily (will save again after Stripe payment for confirmation)
     await chrome.storage.local.set({ 
       pendingAccount: {
         email: email,
@@ -136,7 +266,7 @@ async function startAutomation() {
         name: nameData.fullName
       }
     });
-    console.log('💾 Credentials stored temporarily, will save after Stripe payment');
+    console.log('💾 Credentials stored temporarily for Stripe confirmation');
     
     // Complete - Stop here and guide user
     console.log('✅ Account creation complete!');
@@ -161,7 +291,7 @@ async function startAutomation() {
     await updateStatus('Error: ' + error.message, 'error');
   }
   
-  isAutomationRunning = false;
+  setAutomationRunning(false);
 }
 
 // Helper function to update status
@@ -267,12 +397,23 @@ async function fillNameFields(nameData) {
 // Generate temp email using TempMailApi
 async function generateTempEmail() {
   try {
-    const response = await fetch(`https://tempmailapi.com/api/emails/${TEMP_MAIL_API_KEY}`, {
+    // Clear any previous email data to ensure fresh generation
+    setGeneratedData({ email: null, emailData: null });
+    
+    // Add cache-busting timestamp to ensure unique email generation
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const uniqueParam = `${timestamp}_${randomSuffix}`;
+    
+    // Make API request with cache-busting parameter
+    const response = await fetch(`https://tempmailapi.com/api/emails/${TEMP_MAIL_API_KEY}?_=${uniqueParam}`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      cache: 'no-store'
     });
     
     if (!response.ok) {
@@ -286,7 +427,9 @@ async function generateTempEmail() {
     }
     
     // Store email for later OTP fetching
-    generatedData.emailData = result.data;
+    setGeneratedData({ emailData: result.data });
+    
+    console.log('✅ Generated new temp email:', result.data.email);
     
     return result.data.email;
   } catch (error) {
@@ -901,6 +1044,7 @@ async function fillOTPField(otp) {
   }
 }
 
+
 // Generate test card data using Luhn algorithm
 // Generate random US address
 function generateRandomAddress() {
@@ -1322,6 +1466,29 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Save account to accounts.txt content (store only, no auto-download)
+async function saveAccountToFile(email, password, name = null) {
+  try {
+    // Format account entry
+    const timestamp = new Date().toLocaleString();
+    const accountEntry = `\n=== Account Created: ${timestamp} ===\nName:     ${name || 'Unknown'}\nEmail:    ${email}\nPassword: ${password}\n==============================\n`;
+    
+    // Get existing accounts.txt content from storage
+    const result = await chrome.storage.local.get(['accountsTxtContent']);
+    let accountsContent = result.accountsTxtContent || '=== SAVED ACCOUNTS ===\n';
+    
+    // Append new account
+    accountsContent += accountEntry;
+    
+    // Save updated content to storage (no automatic download)
+    await chrome.storage.local.set({ accountsTxtContent: accountsContent });
+    
+    console.log('✅ Account saved to accounts.txt content:', email);
+  } catch (error) {
+    console.error('❌ Failed to save account to file:', error);
+  }
+}
+
 // Save account credentials to storage
 async function saveAccountCredentials(email, password, name = null) {
   try {
@@ -1329,13 +1496,20 @@ async function saveAccountCredentials(email, password, name = null) {
     const result = await chrome.storage.local.get(['savedAccounts']);
     const savedAccounts = result.savedAccounts || [];
     
+    // Check if account with this email already exists (prevent duplicates)
+    const accountExists = savedAccounts.some(acc => acc.email === email);
+    if (accountExists) {
+      console.log('⚠️ Account with this email already exists, skipping duplicate:', email);
+      return; // Don't save duplicate
+    }
+    
     // Create new account object
     const newAccount = {
       id: Date.now().toString(),
       email: email,
       password: password,
       createdAt: new Date().toISOString(),
-      name: name || generatedData.name || 'Unknown'
+      name: name || getGeneratedData().name || 'Unknown'
     };
     
     // Add to accounts array
@@ -1345,6 +1519,9 @@ async function saveAccountCredentials(email, password, name = null) {
     await chrome.storage.local.set({ savedAccounts: savedAccounts });
     
     console.log('✅ Account credentials saved:', email);
+    
+    // Save to accounts.txt file
+    await saveAccountToFile(email, password, name || newAccount.name);
     
     // Notify popup
     chrome.runtime.sendMessage({
@@ -1358,7 +1535,7 @@ async function saveAccountCredentials(email, password, name = null) {
 
 // Stripe-only mode - Start from Stripe checkout page
 async function startStripeOnlyMode() {
-  isAutomationRunning = true;
+  setAutomationRunning(true);
   
   try {
     // Check if we're on a Stripe checkout page
@@ -1383,7 +1560,7 @@ async function startStripeOnlyMode() {
     
     // Format card display with name and location
     const cardDisplay = `${cardData.cardholderName} • ${cardData.city}, ${cardData.state}`;
-    generatedData.card = cardDisplay;
+    setGeneratedData({ card: cardDisplay });
     
     chrome.storage.local.set({ generatedCard: cardDisplay });
     chrome.runtime.sendMessage({
@@ -1411,19 +1588,30 @@ async function startStripeOnlyMode() {
     await clickSubmitButton();
     await sleep(1000);
     
-    // Save account credentials after successful Stripe payment
-    await updateStatus('Saving account credentials...', 'running');
+    // Save account credentials after successful Stripe payment (only if not already saved)
+    await updateStatus('Confirming account...', 'running');
     const result = await chrome.storage.local.get(['pendingAccount']);
     
     if (result.pendingAccount) {
       const { email, password, name } = result.pendingAccount;
-      await saveAccountCredentials(email, password, name);
+      
+      // Check if account already exists (to prevent duplicates)
+      const accountsResult = await chrome.storage.local.get(['savedAccounts']);
+      const savedAccounts = accountsResult.savedAccounts || [];
+      const accountExists = savedAccounts.some(acc => acc.email === email);
+      
+      if (!accountExists) {
+        // Only save if not already saved (in case it wasn't saved before Stripe)
+        await saveAccountCredentials(email, password, name);
+        console.log('✅ Account credentials confirmed after Stripe payment');
+      } else {
+        console.log('✅ Account already saved, skipping duplicate');
+      }
       
       // Clear pending account
       await chrome.storage.local.remove(['pendingAccount']);
-      console.log('✅ Account credentials saved after Stripe payment');
     } else {
-      console.log('⚠️ No pending account found to save');
+      console.log('⚠️ No pending account found (may have been saved already)');
     }
     
     // Complete
@@ -1443,6 +1631,6 @@ async function startStripeOnlyMode() {
     await updateStatus('Error: ' + error.message, 'error');
   }
   
-  isAutomationRunning = false;
+  setAutomationRunning(false);
 }
 
