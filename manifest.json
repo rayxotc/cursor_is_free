@@ -8,8 +8,7 @@
     "scripting",
     "storage",
     "sidePanel",
-    "cookies",
-    "downloads"
+    "cookies"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -37,7 +36,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["utils.js"],
+      "resources": [
+        "utils.js",
+        "i18n.js",
+        "locales/*.json"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

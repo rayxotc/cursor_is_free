@@ -1,0 +1,156 @@
+{
+  "language": "中文",
+  "languageCode": "zh",
+  
+  "popup": {
+    "title": "自动注册",
+    "fullAuto": "全自动",
+    "stripeOnly": "仅支付",
+    "status": {
+      "ready": "就绪",
+      "starting": "启动中...",
+      "running": "运行中...",
+      "success": "完成",
+      "error": "错误",
+      "stopped": "已停止"
+    },
+    "button": {
+      "start": "开始自动化",
+      "stop": "停止"
+    },
+    "info": {
+      "name": "姓名",
+      "email": "邮箱",
+      "card": "银行卡"
+    },
+    "footer": "由 @Rrryomenn 构建"
+  },
+  
+  "settings": {
+    "title": "设置",
+    "back": "返回",
+    "accounts": {
+      "title": "账户",
+      "saved": "已保存的账户",
+      "description": "管理您创建的账户和凭据",
+      "manage": "管理"
+    },
+    "card": {
+      "title": "银行卡配置",
+      "binPrefix": "卡号BIN前缀",
+      "binDescription": "输入6-8位BIN前缀",
+      "expiry": "有效期",
+      "expiryDescription": "设置自定义或留空随机生成",
+      "cvv": "CVV码",
+      "cvvDescription": "设置自定义或留空随机生成",
+      "current": "当前设置",
+      "bin": "BIN",
+      "expiryLabel": "有效期",
+      "cvvLabel": "CVV",
+      "random": "随机"
+    },
+    "language": {
+      "title": "语言",
+      "current": "当前语言",
+      "description": "更改应用语言"
+    },
+    "about": {
+      "title": "关于",
+      "version": "版本",
+      "status": "状态",
+      "active": "活跃"
+    },
+    "buttons": {
+      "save": "保存更改",
+      "reset": "恢复默认",
+      "change": "更改"
+    },
+    "notifications": {
+      "saved": "设置已保存",
+      "reset": "设置已恢复默认"
+    }
+  },
+  
+  "accounts": {
+    "title": "已保存的账户",
+    "back": "返回",
+    "export": "导出账户",
+    "add": "添加账户",
+    "yourAccounts": "您的账户",
+    "count": "个账户",
+    "empty": {
+      "title": "还没有账户",
+      "description": "使用扩展程序创建的账户将显示在这里"
+    },
+    "card": {
+      "email": "邮箱",
+      "password": "密码",
+      "copyBoth": "复制两者",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "modal": {
+      "editTitle": "编辑账户",
+      "addTitle": "添加账户",
+      "name": "姓名",
+      "email": "邮箱",
+      "password": "密码",
+      "cancel": "取消",
+      "save": "保存更改",
+      "add": "添加账户"
+    },
+    "actions": {
+      "clearAll": "清除所有账户",
+      "confirmDelete": "确定要删除此账户吗？",
+      "confirmClearAll": "确定要删除所有已保存的账户吗？此操作无法撤消。"
+    },
+    "notifications": {
+      "copied": "已复制到剪贴板",
+      "bothCopied": "邮箱和密码已复制到剪贴板",
+      "updated": "账户更新成功",
+      "deleted": "账户已删除",
+      "cleared": "所有账户已清除",
+      "added": "账户添加成功",
+      "exported": "个账户导出成功",
+      "noAccounts": "没有账户可导出",
+      "fillAll": "请填写所有字段",
+      "validEmail": "请输入有效的邮箱地址"
+    },
+    "time": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "daysAgo": "天前"
+    }
+  },
+  
+  "languages": {
+    "title": "语言",
+    "back": "返回",
+    "description": "选择您的首选语言",
+    "selectLanguage": "选择语言",
+    "languages": {
+      "en": "English",
+      "zh": "中文 (Chinese)",
+      "ja": "日本語 (Japanese)",
+      "ko": "한국어 (Korean)"
+    },
+    "saved": "语言更改成功"
+  },
+  
+  "formFields": {
+    "firstName": ["名字", "名", "first name", "firstname"],
+    "lastName": ["姓氏", "姓", "last name", "lastname"],
+    "fullName": ["姓名", "全名", "name", "full name"],
+    "email": ["邮箱", "电子邮件", "email", "e-mail"],
+    "password": ["密码", "password"],
+    "card": ["卡号", "银行卡号", "信用卡号", "card number"],
+    "expiry": ["有效期", "到期日", "expiry", "expiration"],
+    "cvv": ["CVV", "安全码", "cvv", "cvc"],
+    "address": ["地址", "街道地址", "address"],
+    "city": ["城市", "city"],
+    "state": ["省份", "州", "state", "province"],
+    "zip": ["邮编", "邮政编码", "zip", "postal code"],
+    "country": ["国家", "country"]
+  }
+}
+

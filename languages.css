@@ -1,0 +1,251 @@
+/* iOS-style Language Settings Page */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 400px;
+  min-height: 500px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: #F2F2F7;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  padding: 0;
+  position: relative;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: -0.3px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #007AFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(0, 122, 255, 0.1);
+  transform: translateX(-2px);
+}
+
+.back-button:active {
+  transform: scale(0.95);
+}
+
+.spacer {
+  width: 34px;
+}
+
+/* Description */
+.description {
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #8E8E93;
+  text-align: center;
+  background: #F2F2F7;
+}
+
+/* Languages Section */
+.languages-section {
+  margin: 20px 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 10px 12px;
+}
+
+.section-icon {
+  color: #8E8E93;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8E8E93;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Languages List */
+.languages-list {
+  background: #FFFFFF;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.language-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.language-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.language-item:active {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(0.98);
+}
+
+.language-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.language-flag {
+  font-size: 32px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F2F2F7;
+  border-radius: 8px;
+}
+
+.language-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.language-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: -0.2px;
+}
+
+.language-native {
+  font-size: 13px;
+  color: #8E8E93;
+}
+
+.language-check {
+  opacity: 0;
+  transition: all 0.2s ease;
+  transform: scale(0.8);
+}
+
+.language-item.active .language-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.language-item.active {
+  background: rgba(0, 122, 255, 0.04);
+}
+
+.language-divider {
+  height: 0.5px;
+  background: rgba(0, 0, 0, 0.1);
+  margin-left: 70px;
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(0, 0, 0, 0.9);
+  color: #FFFFFF;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast svg {
+  flex-shrink: 0;
+}
+
+/* iOS-style animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.languages-list {
+  animation: slideIn 0.3s ease;
+}
+
+/* Focus states for accessibility */
+.language-item:focus {
+  outline: 2px solid #007AFF;
+  outline-offset: -2px;
+}
+
+.back-button:focus {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+

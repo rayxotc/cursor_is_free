@@ -1,0 +1,156 @@
+{
+  "language": "한국어",
+  "languageCode": "ko",
+  
+  "popup": {
+    "title": "자동 가입",
+    "fullAuto": "전체 자동",
+    "stripeOnly": "결제만",
+    "status": {
+      "ready": "준비",
+      "starting": "시작 중...",
+      "running": "실행 중...",
+      "success": "완료",
+      "error": "오류",
+      "stopped": "중지됨"
+    },
+    "button": {
+      "start": "자동화 시작",
+      "stop": "중지"
+    },
+    "info": {
+      "name": "이름",
+      "email": "이메일",
+      "card": "카드"
+    },
+    "footer": "@Rrryomenn 제작"
+  },
+  
+  "settings": {
+    "title": "설정",
+    "back": "뒤로",
+    "accounts": {
+      "title": "계정",
+      "saved": "저장된 계정",
+      "description": "생성한 계정 및 자격 증명 관리",
+      "manage": "관리"
+    },
+    "card": {
+      "title": "카드 구성",
+      "binPrefix": "카드 BIN 접두사",
+      "binDescription": "6-8자리 BIN 접두사 입력",
+      "expiry": "만료일",
+      "expiryDescription": "사용자 정의 설정 또는 비워두고 무작위로",
+      "cvv": "CVV 코드",
+      "cvvDescription": "사용자 정의 설정 또는 비워두고 무작위로",
+      "current": "현재 설정",
+      "bin": "BIN",
+      "expiryLabel": "만료일",
+      "cvvLabel": "CVV",
+      "random": "무작위"
+    },
+    "language": {
+      "title": "언어",
+      "current": "현재 언어",
+      "description": "앱 언어 변경"
+    },
+    "about": {
+      "title": "정보",
+      "version": "버전",
+      "status": "상태",
+      "active": "활성"
+    },
+    "buttons": {
+      "save": "변경사항 저장",
+      "reset": "기본값으로 재설정",
+      "change": "변경"
+    },
+    "notifications": {
+      "saved": "설정이 저장되었습니다",
+      "reset": "설정이 기본값으로 재설정되었습니다"
+    }
+  },
+  
+  "accounts": {
+    "title": "저장된 계정",
+    "back": "뒤로",
+    "export": "계정 내보내기",
+    "add": "계정 추가",
+    "yourAccounts": "내 계정",
+    "count": "개 계정",
+    "empty": {
+      "title": "아직 계정이 없습니다",
+      "description": "확장 프로그램으로 생성된 계정이 여기에 표시됩니다"
+    },
+    "card": {
+      "email": "이메일",
+      "password": "비밀번호",
+      "copyBoth": "모두 복사",
+      "edit": "편집",
+      "delete": "삭제"
+    },
+    "modal": {
+      "editTitle": "계정 편집",
+      "addTitle": "계정 추가",
+      "name": "이름",
+      "email": "이메일",
+      "password": "비밀번호",
+      "cancel": "취소",
+      "save": "변경사항 저장",
+      "add": "계정 추가"
+    },
+    "actions": {
+      "clearAll": "모든 계정 지우기",
+      "confirmDelete": "이 계정을 삭제하시겠습니까?",
+      "confirmClearAll": "저장된 모든 계정을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+    },
+    "notifications": {
+      "copied": "클립보드에 복사되었습니다",
+      "bothCopied": "이메일 및 비밀번호가 클립보드에 복사되었습니다",
+      "updated": "계정이 성공적으로 업데이트되었습니다",
+      "deleted": "계정이 삭제되었습니다",
+      "cleared": "모든 계정이 지워졌습니다",
+      "added": "계정이 성공적으로 추가되었습니다",
+      "exported": "개 계정이 성공적으로 내보내졌습니다",
+      "noAccounts": "내보낼 계정이 없습니다",
+      "fillAll": "모든 필드를 입력해주세요",
+      "validEmail": "유효한 이메일 주소를 입력해주세요"
+    },
+    "time": {
+      "today": "오늘",
+      "yesterday": "어제",
+      "daysAgo": "일 전"
+    }
+  },
+  
+  "languages": {
+    "title": "언어",
+    "back": "뒤로",
+    "description": "선호하는 언어를 선택하세요",
+    "selectLanguage": "언어 선택",
+    "languages": {
+      "en": "English",
+      "zh": "中文 (Chinese)",
+      "ja": "日本語 (Japanese)",
+      "ko": "한국어 (Korean)"
+    },
+    "saved": "언어가 성공적으로 변경되었습니다"
+  },
+  
+  "formFields": {
+    "firstName": ["이름", "성명", "first name", "firstname"],
+    "lastName": ["성", "성씨", "last name", "lastname"],
+    "fullName": ["전체 이름", "이름", "name", "full name"],
+    "email": ["이메일", "이메일 주소", "email", "e-mail"],
+    "password": ["비밀번호", "password"],
+    "card": ["카드 번호", "신용카드", "card number"],
+    "expiry": ["만료일", "유효기간", "expiry", "expiration"],
+    "cvv": ["CVV", "보안 코드", "cvv", "cvc"],
+    "address": ["주소", "address"],
+    "city": ["도시", "city"],
+    "state": ["주", "시/도", "state"],
+    "zip": ["우편번호", "zip", "postal code"],
+    "country": ["국가", "country"]
+  }
+}
+

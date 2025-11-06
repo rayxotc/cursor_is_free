@@ -50,16 +50,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     });
     return true; // Keep channel open for async response
   }
-  
-  if (request.type === 'downloadAccountsTxt') {
-    // Handle accounts.txt download
-    downloadAccountsTxt(request.content).then(() => {
-      sendResponse({ success: true });
-    }).catch(error => {
-      sendResponse({ success: false, error: error.message });
-    });
-    return true; // Keep channel open for async response
-  }
 });
 
 // Function to fetch temp email using TempMailApi
@@ -270,30 +260,6 @@ async function clearCookiesForDomain(domain) {
       }
     }, 1500);
   });
-}
-
-// Function to download accounts.txt file
-async function downloadAccountsTxt(content) {
-  try {
-    // Create data URL from content
-    const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
-    
-    // Download the file using Chrome downloads API
-    chrome.downloads.download({
-      url: dataUrl,
-      filename: 'accounts.txt',
-      saveAs: false // Save to default downloads folder without prompt
-    }, function(downloadId) {
-      if (chrome.runtime.lastError) {
-        console.error('Download error:', chrome.runtime.lastError);
-      } else {
-        console.log('✅ accounts.txt downloaded, ID:', downloadId);
-      }
-    });
-  } catch (error) {
-    console.error('Error downloading accounts.txt:', error);
-    throw error;
-  }
 }
 
 // Keep service worker alive

@@ -1,6 +1,9 @@
 // Settings page script
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize i18n
+  await autoTranslate();
+  
   const cardBINInput = document.getElementById('cardBIN');
   const expiryMonthInput = document.getElementById('expiryMonth');
   const expiryYearInput = document.getElementById('expiryYear');
@@ -141,6 +144,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (manageAccountsBtn) {
     manageAccountsBtn.addEventListener('click', function() {
       window.location.href = 'accounts.html';
+    });
+  }
+  
+  // Change Language button
+  const changeLanguageBtn = document.getElementById('changeLanguageBtn');
+  if (changeLanguageBtn) {
+    changeLanguageBtn.addEventListener('click', function() {
+      window.location.href = 'languages.html';
     });
   }
 

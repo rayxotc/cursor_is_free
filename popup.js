@@ -2,7 +2,10 @@
 let isRunning = false;
 let currentMode = 'full'; // 'full' or 'stripe'
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize i18n
+  await autoTranslate();
+  
   // Load any saved data
   chrome.storage.local.get(['generatedName', 'generatedEmail', 'generatedCard', 'automationMode'], function(result) {
     if (result.generatedName) {
@@ -18,6 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
       currentMode = result.automationMode;
       updateModeUI();
     }
+  });
+
+  // Language button
+  document.getElementById('languageButton').addEventListener('click', function() {
+    window.location.href = 'languages.html';
   });
 
   // Settings button

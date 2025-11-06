@@ -46,7 +46,8 @@ if (window.hasRun) {
       sendResponse({ status: 'started' });
     } else if (request.action === 'stopAutomation') {
       console.log('🛑 Stopping automation...');
-      window.isAutomationRunning = false;
+      setAutomationRunning(false);
+      updateStatus('Stopped by user', 'error');
       sendResponse({ status: 'stopped' });
     }
     return true;
@@ -59,10 +60,10 @@ if (window.hasRun) {
   chrome.storage.local.get(['autoSignupContinueAfterRefresh'], function(result) {
     if (result.autoSignupContinueAfterRefresh) {
       console.log('🔄 Detected refresh flag, continuing automation...');
-      // Small delay to ensure page is fully loaded
+      // Longer delay to ensure page is FULLY loaded (increased from 1s to 3s)
       setTimeout(() => {
         startAutomation();
-      }, 1000);
+      }, 3000);
     }
   });
 }
@@ -151,14 +152,17 @@ async function startAutomation() {
     await chrome.storage.local.remove(['autoSignupContinueAfterRefresh']);
     
     // Continue with automation (storage already cleared)
-    await updateStatus('Starting automation...', 'running');
-    await sleep(500);
+    await updateStatus('Page refreshed, waiting for full load...', 'running');
+    // Wait longer for page to fully load and render (increased from 500ms to 2s)
+    await sleep(2000);
     
     // Clear all previous generated data to ensure fresh start
     resetGeneratedData();
     
     // Clear stored email from Chrome storage
     await chrome.storage.local.remove(['generatedEmail']);
+    
+    await updateStatus('Starting automation...', 'running');
   } else {
     // Step 0: Clear storage and cookies, then refresh page
     await updateStatus('Clearing storage and cookies...', 'running');
@@ -177,7 +181,7 @@ async function startAutomation() {
   try {
     // Step 1: Generate random name
     await updateStatus('Generating random name...', 'running');
-    const nameData = generateRandomName();
+    const nameData = await generateRandomName();
     setGeneratedData({ name: nameData.fullName });
     
     // Save and update UI
@@ -187,12 +191,14 @@ async function startAutomation() {
       name: nameData.fullName
     });
     
-    await sleep(500);
+    await sleep(800);
+    if (shouldStopAutomation()) return;
     
     // Step 2: Fill name fields
     await updateStatus('Filling name fields...', 'running');
     await fillNameFields(nameData);
-    await sleep(500);
+    await sleep(800); // Longer wait to ensure fields are filled
+    if (shouldStopAutomation()) return;
     
     // Step 3: Generate temp email
     await updateStatus('Generating temporary email...', 'running');
@@ -206,19 +212,23 @@ async function startAutomation() {
     });
     
     await sleep(500);
+    if (shouldStopAutomation()) return;
     
     // Step 4: Fill email field
     await updateStatus('Filling email field...', 'running');
     await fillEmailField(email);
     await sleep(500);
+    if (shouldStopAutomation()) return;
     
     // Step 5: Click signup button
     await updateStatus('Clicking signup button...', 'running');
     await clickSignupButton();
+    if (shouldStopAutomation()) return;
     
     // Step 6: Wait patiently for password screen to load
     await updateStatus('Waiting for password screen...', 'running');
     await waitForPasswordScreen();
+    if (shouldStopAutomation()) return;
     
     // Step 7: Generate and enter password
     await updateStatus('Generating password...', 'running');
@@ -228,23 +238,28 @@ async function startAutomation() {
     await updateStatus('Entering password...', 'running');
     await fillPasswordField(password);
     await sleep(500);
+    if (shouldStopAutomation()) return;
     
     // Step 8: Click continue/next button to generate OTP
     await updateStatus('Clicking continue button...', 'running');
     await clickPasswordContinueButton();
     await sleep(1000);
+    if (shouldStopAutomation()) return;
     
     // Step 9: Wait for OTP screen (URL contains 'magic-code')
     await updateStatus('Waiting for OTP screen...', 'running');
     await waitForOTPScreen();
+    if (shouldStopAutomation()) return;
     
     // Step 10: Wait for OTP input field to appear
     await updateStatus('Waiting for OTP field...', 'running');
     await waitForOTPField();
+    if (shouldStopAutomation()) return;
     
     await updateStatus('Fetching OTP from email...', 'running');
     const otp = await fetchOTPFromEmail(email);
     setGeneratedData({ otp: otp });
+    if (shouldStopAutomation()) return;
     
     // Step 11: Enter OTP
     await updateStatus('Entering OTP...', 'running');
@@ -303,22 +318,76 @@ function updateStatus(message, status) {
   });
 }
 
-// Generate random name
-function generateRandomName() {
-  const firstNames = [
+// Helper function to check if automation should continue
+function shouldStopAutomation() {
+  // Directly check window.isAutomationRunning (more reliable)
+  const isRunning = window.isAutomationRunning || false;
+  if (!isRunning) {
+    console.log('🛑 Automation stopped by user');
+    return true;
+  }
+  return false;
+}
+
+// Generate random name with cultural awareness
+// In East Asian cultures (Chinese, Japanese, Korean), surname comes FIRST
+async function generateRandomName() {
+  // Get current language to determine name order and names to use
+  let currentLanguage = 'en';
+  try {
+    const result = await chrome.storage.local.get(['appLanguage']);
+    currentLanguage = result.appLanguage || 'en';
+  } catch (e) {
+    console.log('Could not get language preference, using default');
+  }
+  
+  let firstName, lastName;
+  
+  // Generate names based on language/culture
+  if (currentLanguage === 'zh') {
+    // Chinese names
+    const chineseGivenNames = ['明', '伟', '芳', '娜', '强', '静', '敏', '磊', '洋', '艳'];
+    const chineseSurnames = ['王', '李', '张', '刘', '陈', '杨', '黄', '赵', '吴', '周'];
+    firstName = chineseGivenNames[Math.floor(Math.random() * chineseGivenNames.length)];
+    lastName = chineseSurnames[Math.floor(Math.random() * chineseSurnames.length)];
+    // Chinese format: Surname + GivenName (no space)
+    return { firstName, lastName, fullName: `${lastName}${firstName}` };
+    
+  } else if (currentLanguage === 'ja') {
+    // Japanese names
+    const japaneseGivenNames = ['太郎', '花子', '健', '美咲', '翔', '愛', '大輔', '陽子', '隆', '真理'];
+    const japaneseSurnames = ['佐藤', '鈴木', '高橋', '田中', '渡辺', '伊藤', '山本', '中村', '小林', '加藤'];
+    firstName = japaneseGivenNames[Math.floor(Math.random() * japaneseGivenNames.length)];
+    lastName = japaneseSurnames[Math.floor(Math.random() * japaneseSurnames.length)];
+    // Japanese format: Surname + space + GivenName
+    return { firstName, lastName, fullName: `${lastName} ${firstName}` };
+    
+  } else if (currentLanguage === 'ko') {
+    // Korean names
+    const koreanGivenNames = ['민수', '지은', '현우', '수진', '준호', '미영', '성민', '은지', '동현', '수아'];
+    const koreanSurnames = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임'];
+    firstName = koreanGivenNames[Math.floor(Math.random() * koreanGivenNames.length)];
+    lastName = koreanSurnames[Math.floor(Math.random() * koreanSurnames.length)];
+    // Korean format: Surname + space + GivenName
+    return { firstName, lastName, fullName: `${lastName} ${firstName}` };
+    
+  } else {
+    // Western names (English and others)
+    const westernFirstNames = [
     'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles',
     'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen'
   ];
   
-  const lastNames = [
+    const westernLastNames = [
     'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
     'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'
   ];
   
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  
+    firstName = westernFirstNames[Math.floor(Math.random() * westernFirstNames.length)];
+    lastName = westernLastNames[Math.floor(Math.random() * westernLastNames.length)];
+    // Western format: FirstName + space + LastName
   return { firstName, lastName, fullName: `${firstName} ${lastName}` };
+  }
 }
 
 // Generate secure password
@@ -347,49 +416,122 @@ function generateSecurePassword() {
   return password.split('').sort(() => Math.random() - 0.5).join('');
 }
 
-// Fill name fields
+// Multi-language form field detection
+// Get selectors for a field type based on current language keywords
+function getMultiLanguageSelectors(fieldType) {
+  // Default English keywords if i18n not loaded
+  const defaultKeywords = {
+    firstName: ['first name', 'firstname', 'fname', 'given name'],
+    lastName: ['last name', 'lastname', 'lname', 'surname', 'family name'],
+    fullName: ['full name', 'name', 'your name'],
+    email: ['email', 'e-mail', 'email address'],
+    password: ['password', 'pass', 'pwd'],
+    card: ['card number', 'card', 'credit card'],
+    expiry: ['expiry', 'expiration', 'exp'],
+    cvv: ['cvv', 'cvc', 'security code'],
+    address: ['address', 'street'],
+    city: ['city'],
+    state: ['state', 'province'],
+    zip: ['zip', 'postal'],
+    country: ['country']
+  };
+  
+  // Try to get keywords from i18n
+  let keywords = defaultKeywords[fieldType] || [];
+  
+  // If i18n is loaded, get localized keywords
+  if (typeof getAllFormFieldKeywords === 'function') {
+    try {
+      const localizedKeywords = getAllFormFieldKeywords();
+      if (localizedKeywords && localizedKeywords[fieldType]) {
+        keywords = localizedKeywords[fieldType];
+      }
+    } catch (e) {
+      console.log('⚠️ Could not load localized keywords, using defaults');
+    }
+  }
+  
+  // Generate selectors for all keywords
+  const selectors = [];
+  
+  // Add the OLD ROBUST SELECTORS that worked before PR (for English compatibility)
+  if (fieldType === 'firstName') {
+    selectors.push('input[name*="first" i][name*="name" i]');
+    selectors.push('input[placeholder*="first" i][placeholder*="name" i]');
+    selectors.push('input[id*="first" i][id*="name" i]');
+    selectors.push('input[name="firstName"]');
+    selectors.push('input[id="firstName"]');
+    selectors.push('input[name="fname"]');
+  } else if (fieldType === 'lastName') {
+    selectors.push('input[name*="last" i][name*="name" i]');
+    selectors.push('input[placeholder*="last" i][placeholder*="name" i]');
+    selectors.push('input[id*="last" i][id*="name" i]');
+    selectors.push('input[name="lastName"]');
+    selectors.push('input[id="lastName"]');
+    selectors.push('input[name="lname"]');
+  }
+  
+  // Add multi-language selectors
+  keywords.forEach(keyword => {
+    // Escape special characters for CSS selector
+    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Add various selector patterns
+    selectors.push(`input[name*="${escapedKeyword}" i]`);
+    selectors.push(`input[placeholder*="${escapedKeyword}" i]`);
+    selectors.push(`input[id*="${escapedKeyword}" i]`);
+    selectors.push(`input[aria-label*="${escapedKeyword}" i]`);
+    selectors.push(`input[title*="${escapedKeyword}" i]`);
+  });
+  
+  return selectors;
+}
+
+// Fill name fields with multi-language support
 async function fillNameFields(nameData) {
-  // Look for first name field
-  const firstNameSelectors = [
-    'input[name*="first" i][name*="name" i]',
-    'input[placeholder*="first" i][placeholder*="name" i]',
-    'input[id*="first" i][id*="name" i]',
-    'input[name="firstName"]',
-    'input[id="firstName"]',
-    'input[name="fname"]'
-  ];
+  console.log('🌐 Filling name fields with multi-language support...');
+  console.log('📝 Name data:', nameData);
   
-  const lastNameSelectors = [
-    'input[name*="last" i][name*="name" i]',
-    'input[placeholder*="last" i][placeholder*="name" i]',
-    'input[id*="last" i][id*="name" i]',
-    'input[name="lastName"]',
-    'input[id="lastName"]',
-    'input[name="lname"]'
-  ];
+  // Get localized selectors
+  const firstNameSelectors = getMultiLanguageSelectors('firstName');
+  const lastNameSelectors = getMultiLanguageSelectors('lastName');
   
+  console.log('🔍 Searching for first name field with', firstNameSelectors.length, 'selectors');
   let firstNameField = findElement(firstNameSelectors);
+  
+  console.log('🔍 Searching for last name field with', lastNameSelectors.length, 'selectors');
   let lastNameField = findElement(lastNameSelectors);
   
   if (firstNameField) {
+    console.log('✅ Found first name field:', firstNameField.name || firstNameField.id || firstNameField.placeholder);
     fillInput(firstNameField, nameData.firstName);
+    console.log('✅ Filled first name:', nameData.firstName);
+    await sleep(300); // Small delay between fields
+  } else {
+    console.warn('⚠️ First name field not found');
   }
   
   if (lastNameField) {
+    console.log('✅ Found last name field:', lastNameField.name || lastNameField.id || lastNameField.placeholder);
     fillInput(lastNameField, nameData.lastName);
+    console.log('✅ Filled last name:', nameData.lastName);
+    await sleep(300);
+  } else {
+    console.warn('⚠️ Last name field not found');
   }
   
   // If no separate fields, look for full name field
   if (!firstNameField && !lastNameField) {
-    const fullNameSelectors = [
-      'input[name*="name" i]:not([type="email"])',
-      'input[placeholder*="name" i]:not([type="email"])',
-      'input[id*="name" i]:not([type="email"])'
-    ];
-    
+    console.log('🔍 No separate name fields found, looking for full name field...');
+    const fullNameSelectors = getMultiLanguageSelectors('fullName');
     let fullNameField = findElement(fullNameSelectors);
+    
     if (fullNameField) {
+      console.log('✅ Found full name field:', fullNameField.name || fullNameField.id || fullNameField.placeholder);
       fillInput(fullNameField, nameData.fullName);
+      console.log('✅ Filled full name:', nameData.fullName);
+    } else {
+      console.error('❌ No name fields found at all!');
     }
   }
 }
@@ -437,33 +579,29 @@ async function generateTempEmail() {
   }
 }
 
-// Fill email field
+// Fill email field with multi-language support
 async function fillEmailField(email) {
-  const emailSelectors = [
-    'input[type="email"]',
-    'input[name*="email" i]',
-    'input[placeholder*="email" i]',
-    'input[id*="email" i]'
-  ];
+  console.log('🌐 Filling email field with multi-language support...');
+  
+  // Always include type="email" as first option
+  const emailSelectors = ['input[type="email"]'].concat(getMultiLanguageSelectors('email'));
   
   let emailField = findElement(emailSelectors);
   
   if (emailField) {
+    console.log('✅ Found email field');
     fillInput(emailField, email);
   } else {
     throw new Error('Email field not found');
   }
 }
 
-// Fill password field
+// Fill password field with multi-language support
 async function fillPasswordField(password) {
-  const passwordSelectors = [
-    'input[type="password"]',
-    'input[name*="password" i]',
-    'input[placeholder*="password" i]',
-    'input[id*="password" i]',
-    'input[autocomplete="new-password"]'
-  ];
+  console.log('🌐 Filling password field with multi-language support...');
+  
+  // Always include type="password" as first option
+  const passwordSelectors = ['input[type="password"]', 'input[autocomplete="new-password"]'].concat(getMultiLanguageSelectors('password'));
   
   let passwordField = findElement(passwordSelectors);
   
@@ -535,8 +673,15 @@ async function waitForNextScreen(timeout = 10000) {
 async function waitForPasswordScreen(timeout = 30000) {
   const startTime = Date.now();
   
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const checkInterval = setInterval(() => {
+      // Check if automation was stopped
+      if (shouldStopAutomation()) {
+        clearInterval(checkInterval);
+        reject(new Error('Automation stopped by user'));
+        return;
+      }
+      
       const currentUrl = window.location.href;
       
       // Check if we're on the password screen
@@ -580,6 +725,13 @@ async function waitForOTPScreen(timeout = 30000) {
     }
     
     const checkInterval = setInterval(() => {
+      // Check if automation was stopped
+      if (shouldStopAutomation()) {
+        clearInterval(checkInterval);
+        reject(new Error('Automation stopped by user'));
+        return;
+      }
+      
       // Check if URL contains magic-code or verify
       if (window.location.href.includes('magic-code') || 
           window.location.href.includes('verify') ||
@@ -798,6 +950,11 @@ async function fetchOTPFromEmail(email) {
     const maxAttempts = 15;
     
     while (attempts < maxAttempts) {
+      // Check if user stopped automation
+      if (shouldStopAutomation()) {
+        throw new Error('Automation stopped by user');
+      }
+      
       // Encode email for URL
       const encodedEmail = encodeURIComponent(email);
       
@@ -1279,49 +1436,57 @@ async function fillStripeForm(cardData) {
     await sleep(500);
   }
   
-  // Step 7: Smart address filling - loop through all text inputs
+  // Step 7: Multi-language address filling
   await sleep(500);
+  console.log('🌐 Filling address fields with multi-language support...');
   
-  const allTextInputs = document.querySelectorAll('input[type="text"]');
-  for (const input of allTextInputs) {
-    const placeholder = (input.getAttribute('placeholder') || '').toLowerCase();
-    const name = (input.getAttribute('name') || '').toLowerCase();
-    
-    if (placeholder.includes('address') && !placeholder.includes('line 2') && !placeholder.includes('email')) {
-      console.log('✅ Found address field (line 1)');
-      input.focus();
-      input.value = cardData.street;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+  // Get multi-language selectors for address fields
+  const addressSelectors = getMultiLanguageSelectors('address');
+  const citySelectors = getMultiLanguageSelectors('city');
+  const stateSelectors = getMultiLanguageSelectors('state');
+  const zipSelectors = getMultiLanguageSelectors('zip');
+  
+  // Fill address (street)
+  let addressField = findElement(addressSelectors);
+  if (addressField) {
+    console.log('✅ Found address field');
+    addressField.focus();
+    addressField.value = cardData.street;
+    addressField.dispatchEvent(new Event('input', { bubbles: true }));
+    addressField.dispatchEvent(new Event('change', { bubbles: true }));
       await sleep(300);
-    } else if (placeholder.includes('line 2') || name.includes('line2')) {
-      // Optional: fill address line 2 if needed
-      console.log('⚠️ Skipping address line 2');
-    } else if (placeholder.includes('city')) {
-      console.log('✅ Found city field');
-      input.focus();
-      input.value = cardData.city;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      await sleep(300);
-    } else if (placeholder.includes('zip') || placeholder.includes('postal')) {
-      console.log('✅ Found ZIP field');
-      input.focus();
-      input.value = cardData.zip;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      await sleep(300);
-    }
   }
   
-  // Also try state field (could be input or select)
-  const stateField = document.querySelector('input[placeholder*="state" i], select[name*="state" i], input[autocomplete="address-level1"]');
+  // Fill city
+  let cityField = findElement(citySelectors);
+  if (cityField) {
+      console.log('✅ Found city field');
+    cityField.focus();
+    cityField.value = cardData.city;
+    cityField.dispatchEvent(new Event('input', { bubbles: true }));
+    cityField.dispatchEvent(new Event('change', { bubbles: true }));
+      await sleep(300);
+  }
+  
+  // Fill state (also try autocomplete)
+  let stateField = findElement(stateSelectors.concat(['select[name*="state" i]', 'input[autocomplete="address-level1"]']));
   if (stateField) {
     console.log('✅ Found state field');
     stateField.focus();
     stateField.value = cardData.state;
     stateField.dispatchEvent(new Event('input', { bubbles: true }));
     stateField.dispatchEvent(new Event('change', { bubbles: true }));
+    await sleep(300);
+  }
+  
+  // Fill ZIP/postal code
+  let zipField = findElement(zipSelectors);
+  if (zipField) {
+    console.log('✅ Found ZIP field');
+    zipField.focus();
+    zipField.value = cardData.zip;
+    zipField.dispatchEvent(new Event('input', { bubbles: true }));
+    zipField.dispatchEvent(new Event('change', { bubbles: true }));
     await sleep(300);
   }
   
@@ -1551,8 +1716,10 @@ async function startStripeOnlyMode() {
       await updateStatus('Waiting for Stripe checkout page...', 'running');
       await waitForPaymentPage(30000);
     }
+    if (shouldStopAutomation()) return;
     
     await sleep(1000);
+    if (shouldStopAutomation()) return;
     
     // Generate test card data
     await updateStatus('Generating test card data...', 'running');
@@ -1577,16 +1744,19 @@ async function startStripeOnlyMode() {
     });
     
     await sleep(500);
+    if (shouldStopAutomation()) return;
     
     // Fill Stripe/payment form
     await updateStatus('Filling payment form...', 'running');
     await fillStripeForm(cardData);
     await sleep(1500);
+    if (shouldStopAutomation()) return;
     
     // Click Submit/OK button
     await updateStatus('Submitting payment...', 'running');
     await clickSubmitButton();
     await sleep(1000);
+    if (shouldStopAutomation()) return;
     
     // Save account credentials after successful Stripe payment (only if not already saved)
     await updateStatus('Confirming account...', 'running');

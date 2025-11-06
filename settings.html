@@ -134,9 +134,38 @@
       <div class="section-header">
         <svg class="section-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2.5 10H17.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 2.5C11.5 4.5 12 7 12 10C12 13 11.5 15.5 10 17.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 2.5C8.5 4.5 8 7 8 10C8 13 8.5 15.5 10 17.5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <div class="section-title" data-i18n="settings.language.title">Language</div>
+      </div>
+      
+      <div class="setting-card">
+        <div class="setting-item">
+          <div class="setting-row">
+            <div class="setting-info-text">
+              <div class="setting-label" data-i18n="settings.language.current">Current Language</div>
+              <div class="setting-description" data-i18n="settings.language.description">Change app language</div>
+            </div>
+            <button id="changeLanguageBtn" class="btn-navigate">
+              <span data-i18n="settings.buttons.change">Change</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-header">
+        <svg class="section-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
           <path d="M10 6V10L12.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        <div class="section-title">About</div>
+        <div class="section-title" data-i18n="settings.about.title">About</div>
       </div>
       
       <div class="setting-card">
@@ -182,9 +211,10 @@
         <circle cx="9" cy="9" r="8" fill="#34C759"/>
         <path d="M5 9L8 12L13 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>Settings saved</span>
+      <span data-i18n="settings.notifications.saved">Settings saved</span>
     </div>
   </div>
+  <script src="i18n.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>

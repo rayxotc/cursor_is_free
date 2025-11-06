@@ -1,0 +1,156 @@
+{
+  "language": "English",
+  "languageCode": "en",
+  
+  "popup": {
+    "title": "Auto Signup",
+    "fullAuto": "Full Auto",
+    "stripeOnly": "Stripe Only",
+    "status": {
+      "ready": "Ready",
+      "starting": "Starting...",
+      "running": "Running...",
+      "success": "Complete",
+      "error": "Error",
+      "stopped": "Stopped"
+    },
+    "button": {
+      "start": "Start Automation",
+      "stop": "Stop"
+    },
+    "info": {
+      "name": "Name",
+      "email": "Email",
+      "card": "Card"
+    },
+    "footer": "Built by @Rrryomenn"
+  },
+  
+  "settings": {
+    "title": "Settings",
+    "back": "Back",
+    "accounts": {
+      "title": "Accounts",
+      "saved": "Saved Accounts",
+      "description": "Manage your created accounts and credentials",
+      "manage": "Manage"
+    },
+    "card": {
+      "title": "Card Configuration",
+      "binPrefix": "Card BIN Prefix",
+      "binDescription": "Enter 6-8 digit BIN prefix",
+      "expiry": "Expiry Date",
+      "expiryDescription": "Set custom or leave empty for random",
+      "cvv": "CVV Code",
+      "cvvDescription": "Set custom or leave empty for random",
+      "current": "Current Settings",
+      "bin": "BIN",
+      "expiryLabel": "Expiry",
+      "cvvLabel": "CVV",
+      "random": "Random"
+    },
+    "language": {
+      "title": "Language",
+      "current": "Current Language",
+      "description": "Change app language"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "status": "Status",
+      "active": "Active"
+    },
+    "buttons": {
+      "save": "Save Changes",
+      "reset": "Reset to Default",
+      "change": "Change"
+    },
+    "notifications": {
+      "saved": "Settings saved",
+      "reset": "Settings reset to default"
+    }
+  },
+  
+  "accounts": {
+    "title": "Saved Accounts",
+    "back": "Back",
+    "export": "Export Accounts",
+    "add": "Add Account",
+    "yourAccounts": "Your Accounts",
+    "count": "accounts",
+    "empty": {
+      "title": "No Accounts Yet",
+      "description": "Accounts created with the extension will appear here"
+    },
+    "card": {
+      "email": "Email",
+      "password": "Password",
+      "copyBoth": "Copy Both",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "modal": {
+      "editTitle": "Edit Account",
+      "addTitle": "Add Account",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "add": "Add Account"
+    },
+    "actions": {
+      "clearAll": "Clear All Accounts",
+      "confirmDelete": "Are you sure you want to delete this account?",
+      "confirmClearAll": "Are you sure you want to delete all saved accounts? This action cannot be undone."
+    },
+    "notifications": {
+      "copied": "copied to clipboard",
+      "bothCopied": "Email & Password copied to clipboard",
+      "updated": "Account updated successfully",
+      "deleted": "Account deleted",
+      "cleared": "All accounts cleared",
+      "added": "Account added successfully",
+      "exported": "accounts exported successfully",
+      "noAccounts": "No accounts to export",
+      "fillAll": "Please fill in all fields",
+      "validEmail": "Please enter a valid email address"
+    },
+    "time": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "days ago"
+    }
+  },
+  
+  "languages": {
+    "title": "Language",
+    "back": "Back",
+    "description": "Choose your preferred language",
+    "selectLanguage": "Select Language",
+    "languages": {
+      "en": "English",
+      "zh": "中文 (Chinese)",
+      "ja": "日本語 (Japanese)",
+      "ko": "한국어 (Korean)"
+    },
+    "saved": "Language changed successfully"
+  },
+  
+  "formFields": {
+    "firstName": ["first name", "firstname", "fname", "given name"],
+    "lastName": ["last name", "lastname", "lname", "surname", "family name"],
+    "fullName": ["full name", "name", "your name"],
+    "email": ["email", "e-mail", "email address"],
+    "password": ["password", "pass", "pwd"],
+    "card": ["card number", "card", "credit card"],
+    "expiry": ["expiry", "expiration", "exp date", "mm/yy", "mm / yy"],
+    "cvv": ["cvv", "cvc", "security code", "csc"],
+    "address": ["address", "street", "street address"],
+    "city": ["city", "town"],
+    "state": ["state", "province", "region"],
+    "zip": ["zip", "postal", "postal code", "zip code"],
+    "country": ["country"]
+  }
+}
+

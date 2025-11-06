@@ -35,7 +35,13 @@ h1 {
   color: #000000;
 }
 
-.settings-button {
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -50,12 +56,12 @@ h1 {
   flex-shrink: 0;
 }
 
-.settings-button:hover {
+.icon-button:hover {
   background: rgba(0, 122, 255, 0.15);
   transform: scale(1.05);
 }
 
-.settings-button:active {
+.icon-button:active {
   transform: scale(0.95);
 }
 

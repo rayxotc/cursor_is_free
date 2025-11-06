@@ -1,0 +1,156 @@
+{
+  "language": "日本語",
+  "languageCode": "ja",
+  
+  "popup": {
+    "title": "自動登録",
+    "fullAuto": "フルオート",
+    "stripeOnly": "決済のみ",
+    "status": {
+      "ready": "準備完了",
+      "starting": "起動中...",
+      "running": "実行中...",
+      "success": "完了",
+      "error": "エラー",
+      "stopped": "停止"
+    },
+    "button": {
+      "start": "自動化開始",
+      "stop": "停止"
+    },
+    "info": {
+      "name": "名前",
+      "email": "メール",
+      "card": "カード"
+    },
+    "footer": "@Rrryomenn 制作"
+  },
+  
+  "settings": {
+    "title": "設定",
+    "back": "戻る",
+    "accounts": {
+      "title": "アカウント",
+      "saved": "保存されたアカウント",
+      "description": "作成したアカウントと認証情報を管理",
+      "manage": "管理"
+    },
+    "card": {
+      "title": "カード設定",
+      "binPrefix": "カードBINプレフィックス",
+      "binDescription": "6〜8桁のBINプレフィックスを入力",
+      "expiry": "有効期限",
+      "expiryDescription": "カスタムを設定するか、空のままでランダム",
+      "cvv": "CVVコード",
+      "cvvDescription": "カスタムを設定するか、空のままでランダム",
+      "current": "現在の設定",
+      "bin": "BIN",
+      "expiryLabel": "有効期限",
+      "cvvLabel": "CVV",
+      "random": "ランダム"
+    },
+    "language": {
+      "title": "言語",
+      "current": "現在の言語",
+      "description": "アプリの言語を変更"
+    },
+    "about": {
+      "title": "について",
+      "version": "バージョン",
+      "status": "ステータス",
+      "active": "アクティブ"
+    },
+    "buttons": {
+      "save": "変更を保存",
+      "reset": "デフォルトにリセット",
+      "change": "変更"
+    },
+    "notifications": {
+      "saved": "設定を保存しました",
+      "reset": "設定をデフォルトにリセットしました"
+    }
+  },
+  
+  "accounts": {
+    "title": "保存されたアカウント",
+    "back": "戻る",
+    "export": "アカウントをエクスポート",
+    "add": "アカウントを追加",
+    "yourAccounts": "あなたのアカウント",
+    "count": "件のアカウント",
+    "empty": {
+      "title": "アカウントがありません",
+      "description": "拡張機能で作成されたアカウントがここに表示されます"
+    },
+    "card": {
+      "email": "メール",
+      "password": "パスワード",
+      "copyBoth": "両方コピー",
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "modal": {
+      "editTitle": "アカウントを編集",
+      "addTitle": "アカウントを追加",
+      "name": "名前",
+      "email": "メール",
+      "password": "パスワード",
+      "cancel": "キャンセル",
+      "save": "変更を保存",
+      "add": "アカウントを追加"
+    },
+    "actions": {
+      "clearAll": "すべてのアカウントをクリア",
+      "confirmDelete": "このアカウントを削除してもよろしいですか？",
+      "confirmClearAll": "すべての保存されたアカウントを削除してもよろしいですか？この操作は元に戻せません。"
+    },
+    "notifications": {
+      "copied": "クリップボードにコピーしました",
+      "bothCopied": "メールとパスワードをクリップボードにコピーしました",
+      "updated": "アカウントを正常に更新しました",
+      "deleted": "アカウントを削除しました",
+      "cleared": "すべてのアカウントをクリアしました",
+      "added": "アカウントを正常に追加しました",
+      "exported": "件のアカウントを正常にエクスポートしました",
+      "noAccounts": "エクスポートするアカウントがありません",
+      "fillAll": "すべてのフィールドに入力してください",
+      "validEmail": "有効なメールアドレスを入力してください"
+    },
+    "time": {
+      "today": "今日",
+      "yesterday": "昨日",
+      "daysAgo": "日前"
+    }
+  },
+  
+  "languages": {
+    "title": "言語",
+    "back": "戻る",
+    "description": "希望する言語を選択してください",
+    "selectLanguage": "言語を選択",
+    "languages": {
+      "en": "English",
+      "zh": "中文 (Chinese)",
+      "ja": "日本語 (Japanese)",
+      "ko": "한국어 (Korean)"
+    },
+    "saved": "言語を正常に変更しました"
+  },
+  
+  "formFields": {
+    "firstName": ["名", "名前", "first name", "firstname"],
+    "lastName": ["姓", "苗字", "last name", "lastname"],
+    "fullName": ["氏名", "フルネーム", "name", "full name"],
+    "email": ["メール", "メールアドレス", "email", "e-mail"],
+    "password": ["パスワード", "password"],
+    "card": ["カード番号", "クレジットカード", "card number"],
+    "expiry": ["有効期限", "expiry", "expiration"],
+    "cvv": ["CVV", "セキュリティコード", "cvv", "cvc"],
+    "address": ["住所", "address"],
+    "city": ["市区町村", "都市", "city"],
+    "state": ["都道府県", "state", "prefecture"],
+    "zip": ["郵便番号", "zip", "postal code"],
+    "country": ["国", "country"]
+  }
+}
+

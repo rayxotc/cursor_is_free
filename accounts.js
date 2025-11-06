@@ -2,7 +2,10 @@
 
 let currentEditingId = null;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize i18n
+  await autoTranslate();
+  
   loadAccounts();
 
   // Listen for account updates from content script

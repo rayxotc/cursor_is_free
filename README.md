@@ -2,16 +2,20 @@
 
 Chrome extension that automates signup flows with random data generation, temp email via [TempMailApi](https://tempmailapi.com), OTP handling, and Luhn-validated test cards.
 
+**Version:** 1.1.0
+
 ## Features
 
 ### 🤖 Automation
-- 🎲 Random name generation
-- 📧 Temp email via TempMailApi
+- 🎲 Random name generation (culturally-aware for EN/CN/JP/KR)
+- 📧 Temp email via TempMailApi (unique per signup)
 - 🔐 Secure password generation (12-char with symbols)
 - 🔢 Auto OTP fetching & extraction
 - 💳 Luhn-validated test cards with custom BIN
-- 🎯 Smart form detection
+- 🎯 Smart multi-language form detection
 - 🚀 Full automation or Stripe-only mode
+- 🛑 Reliable stop button (stops at any step)
+- 🧹 Auto-clears storage & cookies before each run
 
 ### 📱 Account Management
 - 💾 Auto-save accounts after successful signup
@@ -22,10 +26,18 @@ Chrome extension that automates signup flows with random data generation, temp e
 - 💾 Export all accounts to .txt file
 - ➕ Manually add accounts
 
+### 🌍 Multi-Language Support
+- 🌐 **4 Languages:** English, Chinese (中文), Japanese (日本語), Korean (한국어)
+- 🎨 **iOS-Style Language Settings:** Beautiful, minimalistic language selector
+- 🔍 **Smart Form Detection:** Automatically detects form fields in all supported languages
+- 📝 **Culturally-Aware Names:** Generates authentic native names with correct surname order
+- 🌏 **Full UI Translation:** All pages and components translated
+
 ### 🎨 Design & Settings
 - 🎨 Beautiful iOS-inspired UI
 - ⚙️ Configurable card settings (BIN, expiry, CVV)
 - 🔒 Local storage (no cloud, fully private)
+- 🧹 Storage & cookie clearing for clean automation runs
 
 ## Quick Setup
 
@@ -118,6 +130,11 @@ Access via gear icon (⚙️) in top-right:
 - **Expiry Date:** Set custom MM/YY or leave empty for random
 - **CVV Code:** Set custom 3-digit CVV or leave empty for random
 
+### Language:
+- **Change Language:** Click globe icon (🌐) in popup header or Settings → Language
+- **Supported Languages:** English, Chinese (中文), Japanese (日本語), Korean (한국어)
+- **Auto-Detection:** Form fields automatically detected in selected language
+
 ### Accounts:
 - **Manage Accounts:** View, edit, copy, delete, and export saved accounts
 
@@ -128,15 +145,49 @@ Access via gear icon (⚙️) in top-right:
 ├── popup.html/css/js      # Main UI
 ├── settings.html/css/js   # Settings page
 ├── accounts.html/css/js   # Account management page
-├── content.js             # Main automation logic
-├── background.js          # Service worker
+├── languages.html/css/js  # Language settings page (iOS-style)
+├── content.js             # Main automation logic (multi-language support)
+├── background.js          # Service worker (cookie clearing)
+├── i18n.js                # Translation utility
 ├── utils.js               # Helper functions
+├── locales/               # Translation files
+│   ├── en.json            # English
+│   ├── zh.json            # Chinese
+│   ├── ja.json            # Japanese
+│   └── ko.json            # Korean
 └── icons/                 # Extension icons (16/48/128)
 ```
 
 ## What's New
 
-### ✨ Latest Updates:
+### ✨ Version 1.1.0 - Latest Updates:
+
+#### 🌍 Multi-Language Support
+- **4 Languages:** English, Chinese (中文), Japanese (日本語), Korean (한국어)
+- **iOS-Style Language Selector:** Beautiful globe icon in header → Select language
+- **Smart Form Detection:** Automatically detects form fields in Chinese, Japanese, Korean websites
+- **Culturally-Aware Names:** 
+  - Chinese: 王明 (surname first, no space)
+  - Japanese: 佐藤 太郎 (surname first, with space)
+  - Korean: 김 민수 (surname first, with space)
+  - English: John Smith (standard order)
+
+#### 🛑 Improved Stop Functionality
+- **Reliable Stop Button:** Now properly stops automation at any step
+- **Immediate Response:** Stops within 0.2-1 second
+- **Clean Exit:** Properly cleans up and updates UI
+
+#### 🧹 Storage & Cookie Management
+- **Auto-Clear:** Clears localStorage, sessionStorage, and cookies before each run
+- **Clean State:** Ensures fresh start for each automation
+- **Better Reliability:** Prevents conflicts from previous sessions
+
+#### 🐛 Bug Fixes
+- **Fixed Name Field Detection:** Now properly fills both first AND last name fields
+- **Fixed Page Refresh:** Increased wait times for proper page loading
+- **Improved Form Detection:** Restored robust selectors that work with various form structures
+
+#### 📱 Previous Features (v1.0.0)
 - 🔐 **Password Generation:** Auto-generates secure 12-character passwords
 - 💾 **Smart Saving:** Credentials only saved after complete signup (including payment)
 - 📱 **Account Management:** Full CRUD interface for managing saved accounts

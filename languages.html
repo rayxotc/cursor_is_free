@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="languages.title">Language</title>
+  <link rel="stylesheet" href="languages.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <button id="backButton" class="back-button" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 14L6 9L11 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 data-i18n="languages.title">Language</h1>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="description" data-i18n="languages.description">
+      Choose your preferred language
+    </div>
+
+    <div class="languages-section">
+      <div class="section-header">
+        <svg class="section-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2.5 10H17.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 2.5C11.5 4.5 12 7 12 10C12 13 11.5 15.5 10 17.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 2.5C8.5 4.5 8 7 8 10C8 13 8.5 15.5 10 17.5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <div class="section-title" data-i18n="languages.selectLanguage">Select Language</div>
+      </div>
+      
+      <div class="languages-list">
+        <button class="language-item" data-lang="en">
+          <div class="language-info">
+            <div class="language-flag">🇺🇸</div>
+            <div class="language-details">
+              <div class="language-name">English</div>
+              <div class="language-native">English</div>
+            </div>
+          </div>
+          <div class="language-check">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M16 6L8 14L4 10" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <div class="language-divider"></div>
+
+        <button class="language-item" data-lang="zh">
+          <div class="language-info">
+            <div class="language-flag">🇨🇳</div>
+            <div class="language-details">
+              <div class="language-name">Chinese</div>
+              <div class="language-native">中文</div>
+            </div>
+          </div>
+          <div class="language-check">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M16 6L8 14L4 10" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <div class="language-divider"></div>
+
+        <button class="language-item" data-lang="ja">
+          <div class="language-info">
+            <div class="language-flag">🇯🇵</div>
+            <div class="language-details">
+              <div class="language-name">Japanese</div>
+              <div class="language-native">日本語</div>
+            </div>
+          </div>
+          <div class="language-check">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M16 6L8 14L4 10" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <div class="language-divider"></div>
+
+        <button class="language-item" data-lang="ko">
+          <div class="language-info">
+            <div class="language-flag">🇰🇷</div>
+            <div class="language-details">
+              <div class="language-name">Korean</div>
+              <div class="language-native">한국어</div>
+            </div>
+          </div>
+          <div class="language-check">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M16 6L8 14L4 10" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" fill="#34C759"/>
+        <path d="M5 9L8 12L13 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span id="toastMessage" data-i18n="languages.saved">Language changed successfully</span>
+    </div>
+  </div>
+  
+  <script src="i18n.js"></script>
+  <script src="languages.js"></script>
+</body>
+</html>
+
