@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Auto Signup Helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Automates signup process with random data generation",
   "permissions": [
     "activeTab",
     "scripting",
     "storage",
-    "sidePanel"
+    "sidePanel",
+    "cookies",
+    "downloads"
   ],
   "host_permissions": [
     "<all_urls>"

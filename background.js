@@ -40,6 +40,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     });
     return true;
   }
+  
+  if (request.type === 'clearCookies') {
+    // Handle cookie clearing in background
+    clearCookiesForDomain(request.domain).then(result => {
+      sendResponse({ success: true, cleared: result.cleared });
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message });
+    });
+    return true; // Keep channel open for async response
+  }
+  
+  if (request.type === 'downloadAccountsTxt') {
+    // Handle accounts.txt download
+    downloadAccountsTxt(request.content).then(() => {
+      sendResponse({ success: true });
+    }).catch(error => {
+      sendResponse({ success: false, error: error.message });
+    });
+    return true; // Keep channel open for async response
+  }
 });
 
 // Function to fetch temp email using TempMailApi
@@ -47,12 +67,20 @@ async function fetchTempEmail(apiKey) {
   try {
     // Use provided apiKey or fall back to default
     const key = apiKey || TEMP_MAIL_API_KEY;
-    const response = await fetch(`https://tempmailapi.com/api/emails/${key}`, {
+    
+    // Add cache-busting timestamp to ensure unique email generation
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const uniqueParam = `${timestamp}_${randomSuffix}`;
+    
+    const response = await fetch(`https://tempmailapi.com/api/emails/${key}?_=${uniqueParam}`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      cache: 'no-store'
     });
     
     if (!response.ok) {
@@ -64,6 +92,8 @@ async function fetchTempEmail(apiKey) {
     if (!result.status) {
       throw new Error(result.message || 'Failed to create temp email');
     }
+    
+    console.log('✅ Generated new temp email:', result.data.email);
     
     return result.data.email;
   } catch (error) {
@@ -130,6 +160,138 @@ async function fetchOTPInBackground(email, apiKey) {
     
     throw new Error('OTP not received within timeout period');
   } catch (error) {
+    throw error;
+  }
+}
+
+// Function to clear cookies for a domain
+async function clearCookiesForDomain(domain) {
+  return new Promise((resolve) => {
+    const parts = domain.split('.');
+    let totalCookiesToClear = 0;
+    let clearedCount = 0;
+    let resolved = false;
+    let domainChecksCompleted = 0;
+    let totalDomainChecks = 1; // Start with 1 for main domain
+    
+    // Count parent domains
+    for (let i = 1; i < parts.length; i++) {
+      totalDomainChecks++;
+    }
+    
+    const checkComplete = () => {
+      if (!resolved && clearedCount >= totalCookiesToClear && totalCookiesToClear > 0) {
+        resolved = true;
+        console.log(`✅ All ${clearedCount} cookies cleared for ${domain}`);
+        resolve({ cleared: clearedCount, total: totalCookiesToClear });
+      } else if (!resolved && totalCookiesToClear === 0 && domainChecksCompleted >= totalDomainChecks) {
+        resolved = true;
+        console.log(`✅ No cookies found to clear for ${domain}`);
+        resolve({ cleared: 0, total: 0 });
+      }
+    };
+    
+    // Get all cookies for current domain
+    chrome.cookies.getAll({ domain: domain }, function(cookies) {
+      totalCookiesToClear += cookies.length;
+      
+      console.log(`📋 Found ${cookies.length} cookies for ${domain}`);
+      
+      if (cookies.length === 0) {
+        domainChecksCompleted++;
+        checkComplete();
+      } else {
+        let domainCleared = 0;
+        cookies.forEach((cookie) => {
+          const cookieUrl = `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path || '/'}`;
+          
+          chrome.cookies.remove({
+            url: cookieUrl,
+            name: cookie.name
+          }, function(details) {
+            clearedCount++;
+            domainCleared++;
+            if (details) {
+              console.log(`✅ Cleared cookie: ${cookie.name}`);
+            }
+            if (domainCleared >= cookies.length) {
+              domainChecksCompleted++;
+              checkComplete();
+            }
+          });
+        });
+      }
+    });
+    
+    // Also get cookies for parent domains
+    const parentDomains = [];
+    for (let i = 1; i < parts.length; i++) {
+      parentDomains.push('.' + parts.slice(i).join('.'));
+    }
+    
+    parentDomains.forEach((parentDomain) => {
+      chrome.cookies.getAll({ domain: parentDomain }, function(cookies) {
+        totalCookiesToClear += cookies.length;
+        
+        console.log(`📋 Found ${cookies.length} cookies for ${parentDomain}`);
+        
+        if (cookies.length === 0) {
+          domainChecksCompleted++;
+          checkComplete();
+        } else {
+          let domainCleared = 0;
+          cookies.forEach((cookie) => {
+            const cookieUrl = `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path || '/'}`;
+            chrome.cookies.remove({
+              url: cookieUrl,
+              name: cookie.name
+            }, function(details) {
+              clearedCount++;
+              domainCleared++;
+              if (details) {
+                console.log(`✅ Cleared parent domain cookie: ${cookie.name}`);
+              }
+              if (domainCleared >= cookies.length) {
+                domainChecksCompleted++;
+                checkComplete();
+              }
+            });
+          });
+        }
+      });
+    });
+    
+    // Timeout fallback - resolve after 1.5 seconds max
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        console.log(`✅ Cookie clearing completed (${clearedCount}/${totalCookiesToClear} cleared)`);
+        resolve({ cleared: clearedCount, total: totalCookiesToClear });
+      }
+    }, 1500);
+  });
+}
+
+// Function to download accounts.txt file
+async function downloadAccountsTxt(content) {
+  try {
+    // Create data URL from content
+    const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
+    
+    // Download the file using Chrome downloads API
+    chrome.downloads.download({
+      url: dataUrl,
+      filename: 'accounts.txt',
+      saveAs: false // Save to default downloads folder without prompt
+    }, function(downloadId) {
+      if (chrome.runtime.lastError) {
+        console.error('Download error:', chrome.runtime.lastError);
+      } else {
+        console.log('✅ accounts.txt downloaded, ID:', downloadId);
+      }
+    });
+  } catch (error) {
+    console.error('Error downloading accounts.txt:', error);
     throw error;
   }
 }
